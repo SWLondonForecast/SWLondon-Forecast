@@ -4,30 +4,108 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SWLondon Forecast | Somerset & London Weather</title>
-  <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e2937);
+      color: #e2e8f0;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    header {
+      text-align: center;
+      padding: 3rem 0 2rem;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid #334155;
+    }
+    h1 {
+      font-size: 3.2rem;
+      background: linear-gradient(to right, #60a5fa, #a5b4fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 14px 32px;
+      border: none;
+      background: #334155;
+      color: white;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .tab-btn.active {
+      background: #3b82f6;
+      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+    }
+    .current-card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      padding: 2.5rem;
+      margin: 2rem 0;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .temperature { font-size: 6rem; font-weight: 700; line-height: 1; }
+    .details p { margin: 8px 0; }
+    .hourly-grid, .daily-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+    .card {
+      background: rgba(255,255,255,0.08);
+      padding: 1.2rem;
+      border-radius: 18px;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    .card:hover { transform: translateY(-6px); }
+    footer {
+      text-align: center;
+      padding: 3rem 0;
+      opacity: 0.7;
+      font-size: 0.95rem;
+    }
+    @media (max-width: 768px) {
+      .current-card { grid-template-columns: 1fr; text-align: center; }
+      .temperature { font-size: 4.5rem; }
+    }
+  </style>
 </head>
 <body>
   <header>
     <div class="container">
       <h1>SWLondon Forecast</h1>
-      <p>Real-time weather for Somerset & London</p>
+      <p>Live Weather • Somerset & London</p>
     </div>
   </header>
 
   <main class="container">
-    <!-- Location Tabs -->
     <div class="tabs">
       <button class="tab-btn active" data-location="london">🌆 London</button>
       <button class="tab-btn" data-location="somerset">🌳 Somerset (Taunton)</button>
     </div>
 
-    <!-- Current Weather -->
     <div id="current-weather" class="current-card">
-      <div class="weather-main">
+      <div>
         <div id="temp" class="temperature">--°C</div>
-        <div id="condition" class="condition">--</div>
-        <div id="location-name" class="location">London, UK</div>
+        <div id="condition" class="condition" style="font-size:1.4rem; margin-top:0.5rem;">--</div>
+        <div id="location-name" style="margin-top:1rem; font-size:1.2rem;">London, UK</div>
       </div>
       <div class="details">
         <p>Feels like: <span id="feels-like">--</span>°C</p>
@@ -36,19 +114,55 @@
       </div>
     </div>
 
-    <!-- Hourly Forecast -->
-    <h2>Hourly Forecast</h2>
+    <h2 style="margin: 2rem 0 1rem;">Hourly Forecast</h2>
     <div id="hourly" class="hourly-grid"></div>
 
-    <!-- Daily Forecast -->
-    <h2>7-Day Forecast</h2>
+    <h2 style="margin: 2rem 0 1rem;">7-Day Forecast</h2>
     <div id="daily" class="daily-grid"></div>
   </main>
 
   <footer>
-    <p>Data from Open-Meteo • Made for Somerset & London</p>
+    <p>Data from Open-Meteo • Real-time forecasts for Somerset & London</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script>
+    const locations = {
+      london: { lat: 51.5074, lon: -0.1278, name: "London" },
+      somerset: { lat: 51.019, lon: -3.100, name: "Taunton, Somerset" }
+    };
+
+    async function fetchWeather(locKey) {
+      const loc = locations[locKey];
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        // Current weather
+        document.getElementById('temp').textContent = Math.round(data.current.temperature_2m) + "°C";
+        document.getElementById('feels-like').textContent = Math.round(data.current.apparent_temperature);
+        document.getElementById('humidity').textContent = data.current.relative_humidity_2m;
+        document.getElementById('wind').textContent = Math.round(data.current.wind_speed_10m);
+        document.getElementById('location-name').textContent = loc.name + ", UK";
+
+        console.log("✅ Weather loaded for", loc.name);
+      } catch (e) {
+        console.error("Error fetching weather", e);
+      }
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        fetchWeather(btn.dataset.location);
+      });
+    });
+
+    // Initial load
+    fetchWeather('london');
+  </script>
 </body>
 </html>
