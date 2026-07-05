@@ -17,6 +17,20 @@
     header { text-align: center; padding: 2rem 0; }
     h1 { font-size: 2.8rem; background: linear-gradient(to right, #60a5fa, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
+    /* Status Section */
+    .status-section {
+      background: rgba(30, 41, 59, 0.95);
+      border-radius: 20px;
+      padding: 24px;
+      margin: 2rem 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      text-align: center;
+    }
+    .status-section h2 {
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+
     /* Warnings */
     .warnings { margin: 1.5rem 0; display: flex; flex-direction: column; gap: 12px; }
     .warning {
@@ -69,21 +83,6 @@
     .temp { font-size: 4.5rem; font-weight: 700; line-height: 1; }
     .location { font-size: 1.3rem; margin-top: 8px; opacity: 0.9; }
 
-    /* Radar Map */
-    .radar-section {
-      margin: 3rem 0;
-      text-align: center;
-    }
-    .radar-section h2 { margin-bottom: 15px; }
-    iframe {
-      width: 100%;
-      max-width: 1000px;
-      height: 500px;
-      border: none;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
     .last-updated { text-align: center; margin: 25px 0; opacity: 0.7; }
   </style>
 </head>
@@ -96,6 +95,21 @@
   </header>
 
   <main class="container">
+    <!-- Website Status Section -->
+    <div class="status-section">
+      <h2>🌐 Website Current Status</h2>
+      <iframe src="https://swlforecast.betteruptime.com/badge?theme=dark" 
+              width="250" 
+              height="30" 
+              frameborder="0" 
+              scrolling="no" 
+              style="color-scheme: normal; border-radius: 8px;">
+      </iframe>
+      <p style="margin-top: 15px; font-size: 1.05rem; opacity: 0.9;">
+        Website is still being updated — expect occasional random outages.
+      </p>
+    </div>
+
     <!-- Warnings -->
     <div class="warnings" id="warnings"></div>
 
@@ -108,17 +122,8 @@
     <!-- Places Grid -->
     <div id="places-grid" class="places-grid"></div>
 
-    <!-- Severe Weather Radar -->
-    <div class="radar-section">
-      <h2>🌧️ Severe Weather Radar (UK)</h2>
-      <iframe src="https://www.rainviewer.com/map.html?loc=51.5,-0.1,8" allowfullscreen></iframe>
-      <p style="margin-top:10px; opacity:0.6;">Live precipitation radar • Zoom & move around</p>
-    </div>
-
     <p id="last-updated" class="last-updated">Last updated: just now</p>
   </main>
-
-  <iframe src="https://swlforecast.betteruptime.com/badge?theme=dark" width="250" height="30" frameborder="0" scrolling="no" style="color-scheme: normal"></iframe>
 
   <footer style="text-align:center; padding:2rem; opacity:0.6;">
     Data from Open-Meteo • Auto-updates every 15 minutes
@@ -127,8 +132,8 @@
   <script>
     // Warnings
     const warningsConfig = [
-      { type: "yellow", title: "Yellow Warning", desc: "Yellow Warning Enforced In the UK", visible: false },
-      { type: "amber", title: "Amber Warning", desc: "Threat to life and Environment in Scotland", visible: true },
+      { type: "yellow", title: "Yellow Warning", desc: "Yellow Warning Enforced In the UK", visible: true },
+      { type: "amber", title: "Amber Warning", desc: "Threat to life and Environment", visible: false },
       { type: "red", title: "Red Warning", desc: "Danger to Life and Environment", visible: false }
     ];
 
@@ -143,7 +148,7 @@
       });
     }
 
-    // Locations
+    // Locations & Weather
     const allPlaces = {
       london: [
         { id: "london", name: "London (Central)", lat: 51.5074, lon: -0.1278 },
