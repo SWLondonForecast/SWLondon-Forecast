@@ -12,21 +12,43 @@
       background: linear-gradient(135deg, #0f172a, #1e2937);
       color: #e2e8f0;
       min-height: 100vh;
+      position: relative;
     }
     .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
     header { text-align: center; padding: 2rem 0; }
     h1 { font-size: 2.8rem; background: linear-gradient(to right, #60a5fa, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-    /* Status Section */
+    /* Compact Status Section */
     .status-section {
       background: rgba(30, 41, 59, 0.95);
-      border-radius: 20px;
-      padding: 24px;
-      margin: 2rem 0;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      border-radius: 16px;
+      padding: 18px 24px;
+      margin: 1.5rem 0;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
       text-align: center;
+      display: inline-flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
-    .status-section h2 { margin-bottom: 15px; font-size: 1.5rem; }
+
+    /* Heat Warning - Top Right Corner */
+    .heat-warning {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #facc15;
+      color: #1e2937;
+      padding: 16px 20px;
+      border-radius: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      max-width: 280px;
+      z-index: 100;
+      border-left: 6px solid #ca8a04;
+    }
 
     /* Warnings */
     .warnings { margin: 1.5rem 0; display: flex; flex-direction: column; gap: 12px; }
@@ -43,12 +65,7 @@
     .amber { background: #f59e0b; color: #1e2937; }
     .red { background: #ef4444; color: white; }
 
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin: 2rem 0;
-    }
+    .tabs { display: flex; justify-content: center; gap: 15px; margin: 2rem 0; }
     .tab-btn {
       padding: 14px 40px;
       font-size: 1.2rem;
@@ -80,12 +97,8 @@
     .temp { font-size: 4.5rem; font-weight: 700; line-height: 1; }
     .location { font-size: 1.3rem; margin-top: 8px; opacity: 0.9; }
 
-    /* Radar Map */
-    .radar-section {
-      margin: 3rem 0;
-      text-align: center;
-    }
-    .radar-section h2 { margin-bottom: 15px; }
+    /* Radar */
+    .radar-section { margin: 3rem 0; text-align: center; }
     iframe {
       width: 100%;
       max-width: 1000px;
@@ -107,38 +120,38 @@
   </header>
 
   <main class="container">
+    <!-- Heat Warning (Top Right) -->
+    <div class="heat-warning">
+      <strong>🔥 HEAT WARNING</strong><br>
+      Please wear sunscreen, hats, sunglasses.<br>
+      Drink plenty of WATER!
+    </div>
+
     <!-- Website Status -->
     <div class="status-section">
       <h2>🌐 Website Current Status</h2>
       <iframe src="https://swlforecast.betteruptime.com/badge?theme=dark" 
-              width="250" 
-              height="30" 
-              frameborder="0" 
-              scrolling="no" 
+              width="250" height="30" frameborder="0" scrolling="no" 
               style="color-scheme: normal; border-radius: 8px;">
       </iframe>
-      <p style="margin-top: 15px; font-size: 1.05rem; opacity: 0.9;">
-        Website is still being updated — expect occasional random outages.
-      </p>
     </div>
 
     <!-- Warnings -->
     <div class="warnings" id="warnings"></div>
 
-    <!-- Main Tabs -->
+    <!-- Tabs -->
     <div class="tabs">
       <button class="tab-btn active" data-section="london">🌆 London Area</button>
       <button class="tab-btn" data-section="somerset">🌳 Somerset</button>
     </div>
 
-    <!-- Places Grid -->
+    <!-- Places -->
     <div id="places-grid" class="places-grid"></div>
 
-    <!-- Rainfall Radar Map -->
+    <!-- Radar -->
     <div class="radar-section">
       <h2>🌧️ Live Rainfall Radar (UK)</h2>
       <iframe src="https://www.rainviewer.com/map.html?loc=51.5,-0.1,8" allowfullscreen></iframe>
-      <p style="margin-top: 10px; opacity: 0.7;">Interactive radar — zoom and pan to see Somerset & London</p>
     </div>
 
     <p id="last-updated" class="last-updated">Last updated: just now</p>
@@ -149,7 +162,7 @@
   </footer>
 
   <script>
-    // Warnings
+    // Warnings (you can toggle here)
     const warningsConfig = [
       { type: "yellow", title: "Yellow Warning", desc: "Yellow Warning Enforced In the UK", visible: true },
       { type: "amber", title: "Amber Warning", desc: "Threat to life and Environment", visible: false },
@@ -167,7 +180,7 @@
       });
     }
 
-    // Locations
+    // Locations & Weather (same as before)
     const allPlaces = {
       london: [
         { id: "london", name: "London (Central)", lat: 51.5074, lon: -0.1278 },
@@ -201,7 +214,6 @@
     async function renderSection(section) {
       const grid = document.getElementById('places-grid');
       grid.innerHTML = '';
-
       for (const place of allPlaces[section]) {
         const weather = await fetchPlaceWeather(place);
         const card = document.createElement('div');
@@ -220,7 +232,6 @@
       document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
     }
 
-    // Tab clicks
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
