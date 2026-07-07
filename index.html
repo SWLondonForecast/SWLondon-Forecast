@@ -12,10 +12,8 @@
       background: linear-gradient(135deg, #0f172a, #1e2937);
       color: #e2e8f0;
       min-height: 100vh;
-      position: relative;
     }
     .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-
     header { text-align: center; padding: 2rem 0; }
     h1 { font-size: 2.8rem; background: linear-gradient(to right, #60a5fa, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
@@ -23,31 +21,38 @@
     .status-section {
       background: rgba(30, 41, 59, 0.95);
       border-radius: 16px;
-      padding: 18px 24px;
+      padding: 16px 24px;
       margin: 1.5rem 0;
       box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-      text-align: center;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 15px;
       flex-wrap: wrap;
       justify-content: center;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .status-section h2 {
+      font-size: 1.35rem;
+      white-space: nowrap;
     }
 
-    /* Heat Warning - Top Right Corner */
+    /* Heat Warning */
     .heat-warning {
       position: fixed;
       top: 20px;
       right: 20px;
       background: #facc15;
       color: #1e2937;
-      padding: 16px 20px;
+      padding: 14px 18px;
       border-radius: 14px;
       font-weight: 600;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      max-width: 280px;
+      max-width: 260px;
       z-index: 100;
       border-left: 6px solid #ca8a04;
+      font-size: 0.95rem;
     }
 
     /* Warnings */
@@ -97,7 +102,6 @@
     .temp { font-size: 4.5rem; font-weight: 700; line-height: 1; }
     .location { font-size: 1.3rem; margin-top: 8px; opacity: 0.9; }
 
-    /* Radar */
     .radar-section { margin: 3rem 0; text-align: center; }
     iframe {
       width: 100%;
@@ -120,14 +124,14 @@
   </header>
 
   <main class="container">
-    <!-- Heat Warning (Top Right) -->
+    <!-- Heat Warning -->
     <div class="heat-warning">
       <strong>🔥 HEAT WARNING</strong><br>
       Please wear sunscreen, hats, sunglasses.<br>
       Drink plenty of WATER!
     </div>
 
-    <!-- Website Status -->
+    <!-- Website Status - Now Compact -->
     <div class="status-section">
       <h2>🌐 Website Current Status</h2>
       <iframe src="https://swlforecast.betteruptime.com/badge?theme=dark" 
@@ -162,7 +166,7 @@
   </footer>
 
   <script>
-    // Warnings (you can toggle here)
+    // Warnings, locations, weather, and tabs (same as before)
     const warningsConfig = [
       { type: "yellow", title: "Yellow Warning", desc: "Yellow Warning Enforced In the UK", visible: true },
       { type: "amber", title: "Amber Warning", desc: "Threat to life and Environment", visible: false },
@@ -180,7 +184,6 @@
       });
     }
 
-    // Locations & Weather (same as before)
     const allPlaces = {
       london: [
         { id: "london", name: "London (Central)", lat: 51.5074, lon: -0.1278 },
@@ -240,11 +243,9 @@
       });
     });
 
-    // Initial load
     renderWarnings();
     renderSection('london');
 
-    // Auto refresh
     setInterval(() => {
       const active = document.querySelector('.tab-btn.active').dataset.section;
       renderSection(active);
